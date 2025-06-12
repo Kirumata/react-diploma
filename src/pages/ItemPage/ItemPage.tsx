@@ -16,6 +16,7 @@ export default function ItemPage() {
     const [itemData, setItemData] = useState<FullData | undefined>(undefined);
     const [selected, setSelected] = useState<{ size: string, amount: number }>({ size: "", amount: 0 });
     const [itemError, setItemError] = useState(null)
+    const [hasSizes, setHasSizes] = useState(false);
 
     async function getData() {
         fetch(`http://localhost:7070/api/items/${id}`).
@@ -33,7 +34,13 @@ export default function ItemPage() {
     }, []);
 
     useEffect(() => {
-        console.log(itemData);
+        if (itemData) {
+            for (let i = 0; i < itemData.sizes.length; i++) {
+                if (itemData.sizes[i].available) {
+                    setHasSizes(true);
+                }
+            }
+        }
     }, [itemData]);
 
     //const dispatch = useDispatch();
@@ -47,7 +54,7 @@ export default function ItemPage() {
                     <div className="col">
                         <Banner />
                         <p>Ошибка при загрузке элемента</p>
-                        <button className="btn btn-outline-primary" onClick={() => {setItemError(null); getData();}}>Попробовать снова</button>
+                        <button className="btn btn-outline-primary" onClick={() => { setItemError(null); getData(); }}>Попробовать снова</button>
                     </div>
                 </div>
             </main> :
@@ -91,7 +98,7 @@ export default function ItemPage() {
                                                 </tr>
                                             </tbody>
                                         </table>
-                                        <div className="text-center">
+                                        {hasSizes ? <div className="text-center">
                                             <p>Размеры в наличии:
                                                 {itemData.sizes.map(item =>
                                                     item.available &&
@@ -112,20 +119,22 @@ export default function ItemPage() {
                                                     onClick={() => setSelected({ size: selected.size, amount: selected.amount + 1 })}>+</button>
                                             </span>
                                             </p>
-                                        </div>
-                                        <button className="btn btn-danger btn-block btn-lg"
-                                            onClick={() => {
-                                                if (selected.amount > 0 && selected.size != "") {
-                                                    dispatch(addToCart({
-                                                        title: itemData.title,
-                                                        size: selected.size,
-                                                        amount: selected.amount,
-                                                        price: itemData.price,
-                                                        id: itemData.id
-                                                    }));
-                                                    navigate("/cart.html");
-                                                }
-                                            }}>В корзину</button>
+                                            <button className="btn btn-danger btn-block btn-lg"
+                                                onClick={() => {
+                                                    if (selected.amount > 0 && selected.size != "") {
+                                                        dispatch(addToCart({
+                                                            title: itemData.title,
+                                                            size: selected.size,
+                                                            amount: selected.amount,
+                                                            price: itemData.price,
+                                                            id: itemData.id
+                                                        }));
+                                                        navigate("/cart.html");
+                                                    }
+                                                }}>В корзину</button>
+                                        </div> : <p>Нет в наличии</p>
+                                        }
+
                                     </div>
                                 </div>
                             </section> :
