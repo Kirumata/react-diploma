@@ -179,6 +179,12 @@ section {
 
 .catalog-item-card {
   margin-bottom: 1em;
+  height: 100%;
+}
+
+.card-img-top {
+  height: 100%;
+  object-fit: contain;
 }
 
 .catalog-item-size {

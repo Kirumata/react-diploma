@@ -1,3 +1,5 @@
+import Preloader from "../Preloader"
+
 export default function LoadMoreButton(props: { status: "show" | "hide" | "error" | "loading", onClick: () => void }) {
     switch (props.status) {
         case "show": {
@@ -8,12 +10,7 @@ export default function LoadMoreButton(props: { status: "show" | "hide" | "error
         }
         case "loading": {
             return (
-                <div className="preloader">
-                    <span />
-                    <span />
-                    <span />
-                    <span />
-                </div>
+                <Preloader/>
             )
         }
         case "error":

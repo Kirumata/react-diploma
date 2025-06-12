@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useDispatch } from 'react-redux'
 import { changeSearchQuery } from '../../reducers/searchBarReducer';
 import { useAppSelector } from '../../utils/hooks';
+import { useNavigate } from 'react-router-dom';
 
 export default function Header() {
 
@@ -13,7 +14,7 @@ export default function Header() {
 
     const [query, setQuery] = useState("");
     const dispatch = useDispatch();
-
+    const navigate = useNavigate();
 
 
     function changeState() {
@@ -30,9 +31,9 @@ export default function Header() {
     }
 
 
-    const handleChange = (query : string) => {
+    const handleChange = (query: string) => {
         setQuery(query);
-      };
+    };
 
     return (
         <header className="container">
@@ -69,11 +70,11 @@ export default function Header() {
                                                 changeState();
                                             }}
                                         ></div> :
-                                        <a href="/catalog.html" 
-                                        className="header-controls-pic header-controls-search" 
-                                        onClick={(e) => {
-                                            dispatch(changeSearchQuery(query));
-                                        }}></a>
+                                        <a href="/catalog.html"
+                                            className="header-controls-pic header-controls-search"
+                                            onClick={(e) => {
+                                                dispatch(changeSearchQuery(query));
+                                            }}></a>
                                     }
 
                                     <div className="header-controls-pic header-controls-cart">
@@ -83,7 +84,16 @@ export default function Header() {
                                         </div>
                                     </div>
                                 </div>
-                                <form data-id="search-form" className={`header-controls-search-form form-inline ${searchForm}`}>
+                                <form
+                                    data-id="search-form"
+                                    className={`header-controls-search-form form-inline ${searchForm}`}
+                                    onSubmit={(e) => {
+                                        e.preventDefault();
+                                        dispatch(changeSearchQuery(query));
+                                        navigate("/catalog.html");
+                                    }
+                                    }
+                                >
                                     <input className="form-control" placeholder="Поиск" value={query} onChange={(e) => handleChange(e.target.value)} />
                                 </form>
                             </div>

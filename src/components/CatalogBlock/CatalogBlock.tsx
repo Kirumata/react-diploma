@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import CatalogItemCard from "../CatalogItemCard/CatalogItemCard"
 import type { ItemData } from "../../utils/types";
 import { useDispatch } from "react-redux";
-import { clearSearchQuery } from "../../reducers/searchBarReducer";
+import { changeSearchQuery, clearSearchQuery } from "../../reducers/searchBarReducer";
 import LoadMoreButton from "./LoadMoreButton";
 import Preloader from "../Preloader";
 import { useAppSelector } from "../../utils/hooks";
@@ -22,6 +22,7 @@ export default function CatalogBlock() {
 
     const [loading, setLoading] = useState(true);
     const dispatch = useDispatch();
+   
 
     const [catalogError, setCatalogError] = useState(null)
     const [categoriesError, setCategoriesError] = useState(null)
@@ -91,9 +92,11 @@ export default function CatalogBlock() {
 
 
     const handleSubmit = (e: React.FormEvent) => {
+        debugger;
         e.preventDefault();
         setSearchQuery(currentSearchQuery);
         dispatch(clearSearchQuery());
+        
     };
 
     const handleSearch = (query: string) => {
@@ -111,7 +114,7 @@ export default function CatalogBlock() {
                     value={currentSearchQuery}
                     onChange={(e) => handleSearch(e.target.value)} />
             </form>
-            {categoriesError ? <p>Ошибка при загрузке категорий</p> :
+            {!categoriesError &&
                 <ul className="catalog-categories nav justify-content-center">
                     {categories && categories.categoriesList.map(item =>
                         <li className="nav-item" key={item.id}>
@@ -124,7 +127,10 @@ export default function CatalogBlock() {
 
                 </ul>
             }
-            {catalogError ? <p>Ошибка при загрузке каталога</p> :
+            {catalogError ? <div>
+                <p>Ошибка при загрузке каталога</p>
+                <button className="btn btn-outline-primary" onClick={() => {setCatalogError(null); getCurrentItems();}}>Попробовать снова</button>
+                </div> :
                 <div className="row">
                     {!currentItems ? <Preloader /> :
                         currentItems.map(item => <div className="col-4" key={item.id}>
@@ -133,10 +139,10 @@ export default function CatalogBlock() {
                     }
                 </div>
             }
-            <div className="text-center">
+            {!catalogError && <div className="text-center">
                 {hasMore && !loading && <LoadMoreButton status="show" onClick={() => getMore()} />}
                 {loading && currentItems && <LoadMoreButton status="loading" onClick={() => getMore()} />}
-            </div>
+            </div>}
         </section>
     )
 }

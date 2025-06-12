@@ -14,9 +14,10 @@ function App() {
 
   return (
     <>
-      <Header />
+
       <BrowserRouter>
         <div>
+          <Header />
           <div className="page">
             <Routes>
               <Route path="/" element={<MainPage />} />
