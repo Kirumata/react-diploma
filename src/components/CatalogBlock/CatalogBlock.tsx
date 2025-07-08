@@ -22,7 +22,7 @@ export default function CatalogBlock() {
 
     const [loading, setLoading] = useState(true);
     const dispatch = useDispatch();
-   
+
 
     const [catalogError, setCatalogError] = useState(null)
     const [categoriesError, setCategoriesError] = useState(null)
@@ -47,15 +47,20 @@ export default function CatalogBlock() {
         const currentOffset = customOffset !== undefined ? customOffset : (resetOffset ? 0 : offset);
 
         fetch(`http://localhost:7070/api/items?categoryId=${categories.selectedId}&offset=${currentOffset}&q=${searchQuery} `).
-            then(response => response.json()).
+            then(response => {return response.json()}).
             then(data => {
                 if (resetOffset) {
                     setCurrentItems(data);
                 }
                 else {
-                    let currentData = currentItems;
+                    let currentData: ItemData[] = [];
+                    if (currentItems) {
+                        for (let i = 0; i < currentItems.length; i++) {
+                            currentData.push(currentItems[i]);
+                        }
+                    }
                     for (let i = 0; i < data.length; i++) {
-                        currentData?.push(data[i]);
+                        currentData.push(data[i]);
                     }
                     setCurrentItems(currentData)
                 };
@@ -87,6 +92,7 @@ export default function CatalogBlock() {
     }, [categories.selectedId, searchQuery]);
 
     useEffect(() => {
+        currentItems ? console.log("current items") : console.log("null");
         currentItems ? setLoading(false) : setLoading(true);
     }, [currentItems]);
 
@@ -96,7 +102,7 @@ export default function CatalogBlock() {
         e.preventDefault();
         setSearchQuery(currentSearchQuery);
         dispatch(clearSearchQuery());
-        
+
     };
 
     const handleSearch = (query: string) => {
@@ -129,8 +135,8 @@ export default function CatalogBlock() {
             }
             {catalogError ? <div>
                 <p>Ошибка при загрузке каталога</p>
-                <button className="btn btn-outline-primary" onClick={() => {setCatalogError(null); getCurrentItems();}}>Попробовать снова</button>
-                </div> :
+                <button className="btn btn-outline-primary" onClick={() => { setCatalogError(null); getCurrentItems(); }}>Попробовать снова</button>
+            </div> :
                 <div className="row">
                     {!currentItems ? <Preloader /> :
                         currentItems.map(item => <div className="col-4" key={item.id}>
